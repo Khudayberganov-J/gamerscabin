@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GamersCabin.uz</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14172b;--card:#1d2140;--line:#2e3361;--txt:#eef0ff;--mute:#9aa0d0;--vio:#6c5cff;--mint:#27d3a2;--amb:#ffb02e;--red:#ff5d6c;
+--f:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--d:'Unbounded','Manrope',system-ui,sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--ink);color:var(--txt);font:400 15px/1.45 var(--f)}
+body{padding:env(safe-area-inset-top) 0 calc(96px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 6px}
+.logo{font:700 16px var(--d);letter-spacing:-.02em}.logo i{font-style:normal;color:var(--vio)}
+.langs button{background:none;border:1px solid var(--line);color:var(--mute);border-radius:8px;padding:4px 9px;margin-left:4px;font:600 12px var(--f)}
+.langs button.on{background:var(--vio);border-color:var(--vio);color:#fff}
+.tabs{display:flex;gap:6px;margin:8px 16px 14px;background:var(--card);border-radius:12px;padding:4px}
+.tabs button{flex:1;border:0;background:none;color:var(--mute);padding:10px;border-radius:9px;font:600 14px var(--f)}
+.tabs button.on{background:var(--ink);color:var(--txt)}
+main{padding:0 16px}
+h2{font:600 13px var(--f);color:var(--mute);margin:18px 0 8px}
+.row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--txt);border-radius:12px;padding:10px 14px;font:600 14px var(--f);text-align:center}
+.chip.on{border-color:var(--vio);background:var(--vio)}
+.chip small{display:block;font-weight:400;font-size:11px;opacity:.8}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.slot{padding:11px 0;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--txt);font:600 14px var(--f)}
+.slot.on{background:var(--mint);border-color:var(--mint);color:#06281f}
+.slot:disabled{opacity:.28;text-decoration:line-through}
+.note{color:var(--mute);font-size:13px;margin-top:14px}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:var(--ink);border-top:1px solid var(--line);display:flex;align-items:center;gap:14px}
+.bar b{font:700 17px var(--d);display:block}.bar span{font-size:12px;color:var(--mute)}
+.btn{flex:1;border:0;border-radius:14px;padding:15px;background:var(--vio);color:#fff;font:800 16px var(--f)}
+.btn:disabled{background:var(--line);color:var(--mute)}
+.btn.go{background:var(--mint);color:#06281f;width:100%;flex:none;margin-top:16px}
+.door{display:flex;flex-direction:column;align-items:center;margin:6px 0 4px}
+.arch{position:relative;width:210px}
+.arch svg{display:block;width:100%}
+.arch .in{position:absolute;inset:34% 0 0;text-align:center}
+.arch .in small{display:block;color:var(--mute);font-size:12px}
+.arch .in b{font:700 30px var(--d);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.bg{stroke:var(--line)}.pg{stroke:var(--vio);transition:stroke .4s}
+.live .pg{stroke:var(--mint)}.w15 .pg{stroke:var(--amb)}.w5 .pg{stroke:var(--red)}
+.meta{text-align:center;margin:8px 0 0;font-weight:600}.meta span{display:block;color:var(--mute);font-weight:400;font-size:13px}
+.warn{margin-top:14px;padding:12px 14px;border-radius:12px;background:#3a2a10;border:1px solid var(--amb);color:#ffd9a0;font-weight:600}
+.warn.r{background:#3d1a22;border-color:var(--red);color:#ffc2c9}
+.msg{text-align:center;margin-top:10px;font-weight:600;color:var(--mint)}.msg.e{color:var(--red)}
+.mini{display:flex;justify-content:space-between;padding:12px 14px;background:var(--card);border-radius:12px;margin-top:8px}
+.mini span{color:var(--mute)}
+.empty{text-align:center;padding:46px 10px;color:var(--mute)}
+.demo{background:var(--amb);color:#2b1c00;font:700 11px var(--f);padding:3px 8px;border-radius:6px;margin-left:8px}
+#toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--txt);color:var(--ink);padding:10px 16px;border-radius:12px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .25s;z-index:9}
+#toast.s{opacity:1}
+button:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="logo">Gamers<i>Cabin</i>.uz<span id="demo"></span></div><div class="langs" id="langs"></div></header>
+<div class="tabs" id="tabs"></div>
+<main id="app"></main>
+<div id="bar"></div>
+<div id="toast"></div>
+<script>
+/* ===== SETTINGS: change these ===== */
+const CFG={
+  WEBHOOK_URL:"",        // paste your Make webhook URL here (empty = demo mode)
+  PRICE_PER_HOUR:30000,  // price in UZS for one hour
+  OPEN_H:8, CLOSE_H:24,  // working hours (Tashkent time)
+  STEP:30,               // slot step in minutes
+  DURATIONS:[60,120,180,240], // booking lengths in minutes
+  BUFFER_MIN:10,         // gap between bookings for cleaning
+  DOOR_EARLY_MIN:5       // door button works this many minutes before start
+};
+/* ================================== */
+const tg=window.Telegram&&Telegram.WebApp; if(tg){tg.ready();tg.expand();}
+const T={
+en:{book:"Book",mine:"My booking",purpose:"What for",gaming:"Gaming",work:"Work and meetings",date:"Date",dur:"Length",time:"Start time",total:"Total",pay:"Pay and book",incl:"Included: gaming PC, monitor, keyboard, mouse, headset, ventilation.",none:"No free time on this day. Pick another date.",today:"Today",h:"h",min:"min",nobook:"You have no upcoming bookings.",startsIn:"Starts in",left:"Time left",ended:"Time is over",open:"Open door",opening:"Opening...",opened:"Door is open. Come in!",early:"The door button works from {m} minutes before your start.",w15:"15 minutes left. Wrap up or extend soon.",w5:"5 minutes left. Please save your work and get ready to leave.",err:"Something went wrong. Try again.",failed:"Payment was not completed.",next:"Next bookings",ok:"Booked and paid. See you soon!",sel:"Pick a start time"},
+ru:{book:"Бронь",mine:"Моя бронь",purpose:"Для чего",gaming:"Игры",work:"Работа и встречи",date:"Дата",dur:"Длительность",time:"Время начала",total:"Итого",pay:"Оплатить и забронировать",incl:"В кабине: игровой ПК, монитор, клавиатура, мышь, наушники, вентиляция.",none:"На этот день нет свободного времени. Выберите другую дату.",today:"Сегодня",h:"ч",min:"мин",nobook:"У вас нет предстоящих броней.",startsIn:"До начала",left:"Осталось",ended:"Время вышло",open:"Открыть дверь",opening:"Открываю...",opened:"Дверь открыта. Проходите!",early:"Кнопка двери работает за {m} минут до начала.",w15:"Осталось 15 минут. Завершайте или продлите заранее.",w5:"Осталось 5 минут. Сохраните работу и подготовьтесь к выходу.",err:"Что-то пошло не так. Попробуйте снова.",failed:"Оплата не завершена.",next:"Следующие брони",ok:"Забронировано и оплачено. До встречи!",sel:"Выберите время начала"},
+uz:{book:"Bron",mine:"Mening bronim",purpose:"Nima uchun",gaming:"O‘yin",work:"Ish va uchrashuvlar",date:"Sana",dur:"Davomiyligi",time:"Boshlanish vaqti",total:"Jami",pay:"To‘lash va bron qilish",incl:"Kabinada: o‘yin kompyuteri, monitor, klaviatura, sichqoncha, quloqchin, ventilyatsiya.",none:"Bu kunga bo‘sh vaqt yo‘q. Boshqa sanani tanlang.",today:"Bugun",h:"soat",min:"daq",nobook:"Kelgusi bronlaringiz yo‘q.",startsIn:"Boshlanishigacha",left:"Qolgan vaqt",ended:"Vaqt tugadi",open:"Eshikni ochish",opening:"Ochilmoqda...",opened:"Eshik ochiq. Kiring!",early:"Eshik tugmasi boshlanishdan {m} daqiqa oldin ishlaydi.",w15:"15 daqiqa qoldi. Tugating yoki oldindan uzaytiring.",w5:"5 daqiqa qoldi. Ishingizni saqlang va chiqishga tayyorlaning.",err:"Xatolik yuz berdi. Qayta urinib ko‘ring.",failed:"To‘lov yakunlanmadi.",next:"Keyingi bronlar",ok:"Bron qilindi va to‘landi. Kutamiz!",sel:"Boshlanish vaqtini tanlang"}};
+const LOC={en:"en-GB",ru:"ru-RU",uz:"uz-UZ"};
+const lc=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.language_code)||"en";
+const S={lang:lc.startsWith("ru")?"ru":lc.startsWith("uz")?"uz":"en",tab:"book",purpose:"gaming",date:null,dur:60,start:null,busy:[],mine:[],busyNow:false,msg:"",err:false,warned:{}};
+const t=k=>T[S.lang][k]; const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,"0");
+const nowT=()=>new Date(Date.now()+5*36e5);  // Tashkent clock (UTC+5)
+const todayStr=()=>nowT().toISOString().slice(0,10);
+const minsNow=()=>nowT().getUTCHours()*60+nowT().getUTCMinutes();
+const addDays=(d,n)=>new Date(Date.parse(d+"T00:00:00Z")+n*864e5).toISOString().slice(0,10);
+const iso=(d,m)=>`${d}T${pad(Math.floor(m/60))}:${pad(m%60)}:00+05:00`;
+const hm=ms=>new Date(ms+5*36e5).toISOString().slice(11,16);
+const ymd=ms=>new Date(ms+5*36e5).toISOString().slice(0,10);
+const money=n=>Number(n).toLocaleString("ru-RU")+" UZS";
+const durLabel=m=>m%60?`${m} ${t("min")}`:`${m/60} ${t("h")}`;
+S.date=todayStr();
+function toast(x){const e=$("toast");e.textContent=x;e.className="s";setTimeout(()=>e.className="",2600)}
+function buzz(k){try{tg&&tg.HapticFeedback.notificationOccurred(k)}catch(e){}}
+
+/* ---------- talking to Make (or demo) ---------- */
+const DEMO={mine:[]};
+function demoRun(a,d){
+  if(a==="get_slots")return{busy:[{start:iso(d.date,13*60),end:iso(d.date,14*60+30)}]};
+  if(a==="create_booking"){const s=Date.parse(d.start);DEMO.mine.push({id:"D"+s,start:d.start,end:new Date(s+d.duration*6e4).toISOString(),purpose:d.purpose,status:"paid",token:"demo"});return{ok:true}}
+  if(a==="my_bookings")return{bookings:DEMO.mine};
+  if(a==="open_door")return{ok:true};
+  return{}}
+async function api(action,data){
+  data=data||{};
+  if(!CFG.WEBHOOK_URL){await new Promise(r=>setTimeout(r,300));return demoRun(action,data)}
+  const p={action,lang:S.lang,initData:tg?tg.initData:"",...data};
+  const r=await fetch(CFG.WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"payload="+encodeURIComponent(JSON.stringify(p))});
+  return r.json();
+}
+
+/* ---------- slots ---------- */
+function slotList(){
+  const out=[],d=S.date,isToday=d===todayStr(),n=minsNow(),B=CFG.BUFFER_MIN*6e4;
+  const minStart=!isToday?0:CFG.WEBHOOK_URL?Math.ceil(n/CFG.STEP)*CFG.STEP:Math.floor(n/CFG.STEP)*CFG.STEP;
+  for(let m=CFG.OPEN_H*60;m+S.dur<=CFG.CLOSE_H*60;m+=CFG.STEP){
+    const s=Date.parse(iso(d,m)),e=s+S.dur*6e4;
+    const clash=S.busy.some(b=>s<Date.parse(b.end)+B&&e>Date.parse(b.start)-B);
+    out.push({m,off:clash||m<minStart})}
+  return out}
+async function loadSlots(){S.start=null;S.busy=[];render();try{S.busy=(await api("get_slots",{date:S.date})).busy||[]}catch(e){toast(t("err"))}render()}
+async function loadMine(){try{const r=await api("my_bookings");S.mine=(r.bookings||[]).filter(b=>b.status!=="pending"&&Date.parse(b.end)>Date.now()).sort((a,b)=>Date.parse(a.start)-Date.parse(b.start))}catch(e){S.mine=[]}}
+
+/* ---------- actions ---------- */
+const A={
+ lang(l){S.lang=l;render()},
+ tab(x){S.tab=x;S.msg="";if(x==="mine"){loadMine().then(render)}render()},
+ purpose(p){S.purpose=p;render()},
+ date(d){S.date=d;loadSlots()},
+ dur(m){S.dur=m;S.start=null;render()},
+ pick(m){S.start=m;render()},
+ async pay(){
+  if(S.start==null||S.busyNow)return;S.busyNow=true;render();
+  try{
+   const r=await api("create_booking",{date:S.date,start:iso(S.date,S.start),duration:S.dur,purpose:S.purpose});
+   if(r.error)throw 0;
+   const done=()=>{S.busyNow=false;S.start=null;buzz("success");toast(t("ok"));A.tab("mine")};
+   if(r.invoice_url&&tg&&tg.openInvoice){tg.openInvoice(r.invoice_url,st=>{if(st==="paid")done();else{S.busyNow=false;toast(t("failed"));loadSlots()}})}
+   else done();
+  }catch(e){S.busyNow=false;toast(t("err"));loadSlots()}
+ },
+ async door(){
+  const b=S.mine[0];if(!b)return;S.msg=t("opening");S.err=false;paintDoor();
+  try{const r=await api("open_door",{booking_id:b.id,token:b.token});
+   if(r.ok){S.msg=t("opened");buzz("success")}else throw 0}
+  catch(e){S.msg=t("err");S.err=true;buzz("error")}
+  paintDoor()}
+};
+function paintDoor(){const m=$("dm");if(m){m.textContent=S.msg;m.className="msg"+(S.err?" e":"")}}
+
+/* ---------- screens ---------- */
+function weekday(d){try{return new Intl.DateTimeFormat(LOC[S.lang],{weekday:"short"}).format(new Date(d+"T12:00:00Z"))}catch(e){return""}}
+function renderBook(){
+  const days=[0,1,2,3,4,5,6].map(i=>addDays(todayStr(),i));
+  const sl=slotList(),free=sl.some(x=>!x.off);
+  return `<h2>${t("purpose")}</h2><div class="row">
+   <button class="chip ${S.purpose==="gaming"?"on":""}" onclick="A.purpose('gaming')">${t("gaming")}</button>
+   <button class="chip ${S.purpose==="work"?"on":""}" onclick="A.purpose('work')">${t("work")}</button></div>
+  <h2>${t("date")}</h2><div class="row">${days.map((d,i)=>`<button class="chip ${d===S.date?"on":""}" onclick="A.date('${d}')">${i?weekday(d):t("today")}<small>${d.slice(8)}.${d.slice(5,7)}</small></button>`).join("")}</div>
+  <h2>${t("dur")}</h2><div class="row">${CFG.DURATIONS.map(m=>`<button class="chip ${m===S.dur?"on":""}" onclick="A.dur(${m})">${durLabel(m)}</button>`).join("")}</div>
+  <h2>${t("time")}</h2>${free?`<div class="grid">${sl.map(x=>`<button class="slot ${S.start===x.m?"on":""}" ${x.off?"disabled":""} onclick="A.pick(${x.m})">${pad(Math.floor(x.m/60))}:${pad(x.m%60)}</button>`).join("")}</div>`:`<div class="empty">${t("none")}</div>`}
+  <p class="note">${t("incl")}</p>`}
+function renderMine(){
+  const b=S.mine[0];
+  if(!b)return `<div class="empty">${t("nobook")}<button class="btn go" onclick="A.tab('book')">${t("book")}</button></div>`;
+  const s=Date.parse(b.start),e=Date.parse(b.end);
+  const rest=S.mine.slice(1).map(x=>`<div class="mini"><b>${ymd(Date.parse(x.start)).slice(8)}.${ymd(Date.parse(x.start)).slice(5,7)}</b><span>${hm(Date.parse(x.start))} - ${hm(Date.parse(x.end))}</span></div>`).join("");
+  return `<div class="door" id="dr"><div class="arch"><svg viewBox="0 0 120 160" fill="none" stroke-width="6" stroke-linecap="round">
+   <path class="bg" pathLength="100" d="M10 154V60a50 50 0 0 1 100 0v94"/><path class="pg" id="pg" pathLength="100" stroke-dasharray="0 100" d="M10 154V60a50 50 0 0 1 100 0v94"/></svg>
+   <div class="in"><small id="cl"></small><b id="ct">--:--</b></div></div>
+   <div class="meta">${hm(s)} - ${hm(e)}<span>${ymd(s).slice(8)}.${ymd(s).slice(5,7)} - ${b.purpose==="work"?t("work"):t("gaming")}</span></div></div>
+   <div id="wb"></div>
+   <button class="btn go" id="door" disabled onclick="A.door()">${t("open")}</button>
+   <div class="msg" id="dm">${S.msg}</div><p class="note" id="eh" style="text-align:center">${t("early").replace("{m}",CFG.DOOR_EARLY_MIN)}</p>
+   ${rest?`<h2>${t("next")}</h2>${rest}`:""}`}
+function render(){
+  $("demo").innerHTML=CFG.WEBHOOK_URL?"":'<span class="demo">DEMO</span>';
+  $("langs").innerHTML=["uz","ru","en"].map(l=>`<button class="${S.lang===l?"on":""}" onclick="A.lang('${l}')">${l.toUpperCase()}</button>`).join("");
+  $("tabs").innerHTML=["book","mine"].map(x=>`<button class="${S.tab===x?"on":""}" onclick="A.tab('${x}')">${t(x)}</button>`).join("");
+  $("app").innerHTML=S.tab==="book"?renderBook():renderMine();
+  const price=S.dur/60*CFG.PRICE_PER_HOUR;
+  $("bar").innerHTML=S.tab==="book"?`<div class="bar"><div><span>${t("total")}</span><b>${money(price)}</b></div><button class="btn" ${S.start==null||S.busyNow?"disabled":""} onclick="A.pay()">${S.start==null?t("sel"):t("pay")}</button></div>`:"";
+  tick()}
+
+/* ---------- live countdown, door button, 15 and 5 minute warnings ---------- */
+function tick(){
+  const b=S.mine[0];if(S.tab!=="mine"||!b||!$("ct"))return;
+  const s=Date.parse(b.start),e=Date.parse(b.end),n=Date.now();
+  let ms,lbl,cls="";
+  if(n<s){ms=s-n;lbl=t("startsIn")}else if(n<e){ms=e-n;lbl=t("left");cls="live"}else{ms=0;lbl=t("ended")}
+  const sec=Math.max(0,Math.floor(ms/1000)),H=Math.floor(sec/3600);
+  $("ct").textContent=(H?H+":":"")+pad(Math.floor(sec%3600/60))+":"+pad(sec%60);
+  $("cl").textContent=lbl;
+  const live=n>=s&&n<e,left=e-n;
+  let w="";
+  if(live&&left<=3e5){cls="w5";w="w5"}else if(live&&left<=9e5){cls="w15";w="w15"}
+  if(w&&!S.warned[b.id+w]){S.warned[b.id+w]=1;buzz("warning");toast(t(w))}
+  $("dr").className="door "+cls;
+  $("pg").setAttribute("stroke-dasharray",(live?Math.max(0,left/(e-s))*100:n<s?100:0)+" 100");
+  $("wb").innerHTML=w?`<div class="warn ${w==="w5"?"r":""}">${t(w)}</div>`:"";
+  $("door").disabled=!(n>=s-CFG.DOOR_EARLY_MIN*6e4&&n<e);
+  if(n>=e+1500){loadMine().then(render)}}
+setInterval(tick,1000);
+render();loadSlots();
+</script>
+</body>
+</html>

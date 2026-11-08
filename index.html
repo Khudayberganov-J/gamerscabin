@@ -68,12 +68,12 @@ button:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
 /* ===== SETTINGS: change these ===== */
 const CFG={
   WEBHOOK_URL:"https://hook.eu1.make.com/wfvo3oh1efyjhxoieekncxd6kfxw3o9p",        // paste your Make webhook URL here (empty = demo mode)
-  PRICE_PER_HOUR:30000,  // price in UZS for one hour
+  PRICE_PER_HOUR:34000,  // price in UZS for one hour
   OPEN_H:8, CLOSE_H:24,  // working hours (Tashkent time)
   STEP:30,               // slot step in minutes
   DURATIONS:[60,120,180,240], // booking lengths in minutes
   BUFFER_MIN:0,         // gap between bookings for cleaning
-  DOOR_EARLY_MIN:5       // door button works this many minutes before start
+  DOOR_EARLY_MIN:0       // door button works this many minutes before start
 };
 /* ================================== */
 const tg=window.Telegram&&Telegram.WebApp; if(tg){tg.ready();tg.expand();}

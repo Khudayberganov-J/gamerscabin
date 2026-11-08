@@ -30,6 +30,8 @@ h2{font:600 13px var(--f);color:var(--mute);margin:18px 0 8px}
 .slot{padding:11px 0;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--txt);font:600 14px var(--f)}
 .slot.on{background:var(--mint);border-color:var(--mint);color:#06281f}
 .slot:disabled{opacity:.28;text-decoration:line-through}
+.sum{display:flex;justify-content:space-between;background:var(--card);border-radius:12px;padding:12px 16px;margin-bottom:8px}
+.sum small{display:block;color:var(--mute);font-size:12px}.sum b{font:700 16px var(--d)}
 .note{color:var(--mute);font-size:13px;margin-top:14px}
 .bar{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:var(--ink);border-top:1px solid var(--line);display:flex;align-items:center;gap:14px}
 .bar b{font:700 17px var(--d);display:block}.bar span{font-size:12px;color:var(--mute)}
@@ -70,20 +72,19 @@ const CFG={
   WEBHOOK_URL:"https://hook.eu1.make.com/wfvo3oh1efyjhxoieekncxd6kfxw3o9p",        // paste your Make webhook URL here (empty = demo mode)
   PRICE_PER_HOUR:34000,  // price in UZS for one hour
   OPEN_H:8, CLOSE_H:24,  // working hours (Tashkent time)
-  STEP:30,               // slot step in minutes
-  DURATIONS:[60,120,180,240], // booking lengths in minutes
-  BUFFER_MIN:0,         // gap between bookings for cleaning
+  STEP:30,               // slot size in minutes
+  BUFFER_MIN:0,          // gap between bookings for cleaning
   DOOR_EARLY_MIN:0       // door button works this many minutes before start
 };
 /* ================================== */
 const tg=window.Telegram&&Telegram.WebApp; if(tg){tg.ready();tg.expand();}
 const T={
-en:{book:"Book",mine:"My booking",purpose:"What for",gaming:"Gaming",work:"Work and meetings",date:"Date",dur:"Length",time:"Start time",total:"Total",pay:"Pay and book",incl:"Included: gaming PC, monitor, keyboard, mouse, headset, ventilation.",none:"No free time on this day. Pick another date.",today:"Today",h:"h",min:"min",nobook:"You have no upcoming bookings.",startsIn:"Starts in",left:"Time left",ended:"Time is over",open:"Open door",opening:"Opening...",opened:"Door is open. Come in!",early:"The door button works from {m} minutes before your start.",w15:"15 minutes left. Wrap up or extend soon.",w5:"5 minutes left. Please save your work and get ready to leave.",err:"Something went wrong. Try again.",failed:"Payment was not completed.",next:"Next bookings",ok:"Booked and paid. See you soon!",sel:"Pick a start time"},
-ru:{book:"Бронь",mine:"Моя бронь",purpose:"Для чего",gaming:"Игры",work:"Работа и встречи",date:"Дата",dur:"Длительность",time:"Время начала",total:"Итого",pay:"Оплатить и забронировать",incl:"В кабине: игровой ПК, монитор, клавиатура, мышь, наушники, вентиляция.",none:"На этот день нет свободного времени. Выберите другую дату.",today:"Сегодня",h:"ч",min:"мин",nobook:"У вас нет предстоящих броней.",startsIn:"До начала",left:"Осталось",ended:"Время вышло",open:"Открыть дверь",opening:"Открываю...",opened:"Дверь открыта. Проходите!",early:"Кнопка двери работает за {m} минут до начала.",w15:"Осталось 15 минут. Завершайте или продлите заранее.",w5:"Осталось 5 минут. Сохраните работу и подготовьтесь к выходу.",err:"Что-то пошло не так. Попробуйте снова.",failed:"Оплата не завершена.",next:"Следующие брони",ok:"Забронировано и оплачено. До встречи!",sel:"Выберите время начала"},
-uz:{book:"Bron",mine:"Mening bronim",purpose:"Nima uchun",gaming:"O‘yin",work:"Ish va uchrashuvlar",date:"Sana",dur:"Davomiyligi",time:"Boshlanish vaqti",total:"Jami",pay:"To‘lash va bron qilish",incl:"Kabinada: o‘yin kompyuteri, monitor, klaviatura, sichqoncha, quloqchin, ventilyatsiya.",none:"Bu kunga bo‘sh vaqt yo‘q. Boshqa sanani tanlang.",today:"Bugun",h:"soat",min:"daq",nobook:"Kelgusi bronlaringiz yo‘q.",startsIn:"Boshlanishigacha",left:"Qolgan vaqt",ended:"Vaqt tugadi",open:"Eshikni ochish",opening:"Ochilmoqda...",opened:"Eshik ochiq. Kiring!",early:"Eshik tugmasi boshlanishdan {m} daqiqa oldin ishlaydi.",w15:"15 daqiqa qoldi. Tugating yoki oldindan uzaytiring.",w5:"5 daqiqa qoldi. Ishingizni saqlang va chiqishga tayyorlaning.",err:"Xatolik yuz berdi. Qayta urinib ko‘ring.",failed:"To‘lov yakunlanmadi.",next:"Keyingi bronlar",ok:"Bron qilindi va to‘landi. Kutamiz!",sel:"Boshlanish vaqtini tanlang"}};
+en:{book:"Book",mine:"My booking",purpose:"What for",gaming:"Gaming",work:"Work and meetings",date:"Date",from:"From",until:"Until",len:"Length",ps:"Pick your start time",pe:"Now pick the end time",chg:"Change",total:"Total",pay:"Pay and book",incl:"Included: gaming PC, monitor, keyboard, mouse, headset, ventilation.",none:"No free time on this day. Pick another date.",today:"Today",h:"h",min:"min",nobook:"You have no upcoming bookings.",startsIn:"Starts in",left:"Time left",ended:"Time is over",open:"Open door",opening:"Opening...",opened:"Door is open. Come in!",early:"The door button works from {m} minutes before your start.",w15:"15 minutes left. Wrap up or extend soon.",w5:"5 minutes left. Please save your work and get ready to leave.",err:"Something went wrong. Try again.",failed:"Payment was not completed.",next:"Next bookings",ok:"Booked and paid. See you soon!",sel:"Pick your time"},
+ru:{book:"Бронь",mine:"Моя бронь",purpose:"Для чего",gaming:"Игры",work:"Работа и встречи",date:"Дата",from:"С",until:"До",len:"Длительность",ps:"Выберите время начала",pe:"Теперь выберите время окончания",chg:"Изменить",total:"Итого",pay:"Оплатить и забронировать",incl:"В кабине: игровой ПК, монитор, клавиатура, мышь, наушники, вентиляция.",none:"На этот день нет свободного времени. Выберите другую дату.",today:"Сегодня",h:"ч",min:"мин",nobook:"У вас нет предстоящих броней.",startsIn:"До начала",left:"Осталось",ended:"Время вышло",open:"Открыть дверь",opening:"Открываю...",opened:"Дверь открыта. Проходите!",early:"Кнопка двери работает за {m} минут до начала.",w15:"Осталось 15 минут. Завершайте или продлите заранее.",w5:"Осталось 5 минут. Сохраните работу и подготовьтесь к выходу.",err:"Что-то пошло не так. Попробуйте снова.",failed:"Оплата не завершена.",next:"Следующие брони",ok:"Забронировано и оплачено. До встречи!",sel:"Выберите время"},
+uz:{book:"Bron",mine:"Mening bronim",purpose:"Nima uchun",gaming:"O‘yin",work:"Ish va uchrashuvlar",date:"Sana",from:"Boshlanishi",until:"Tugashi",len:"Davomiyligi",ps:"Boshlanish vaqtini tanlang",pe:"Endi tugash vaqtini tanlang",chg:"O‘zgartirish",total:"Jami",pay:"To‘lash va bron qilish",incl:"Kabinada: o‘yin kompyuteri, monitor, klaviatura, sichqoncha, quloqchin, ventilyatsiya.",none:"Bu kunga bo‘sh vaqt yo‘q. Boshqa sanani tanlang.",today:"Bugun",h:"soat",min:"daq",nobook:"Kelgusi bronlaringiz yo‘q.",startsIn:"Boshlanishigacha",left:"Qolgan vaqt",ended:"Vaqt tugadi",open:"Eshikni ochish",opening:"Ochilmoqda...",opened:"Eshik ochiq. Kiring!",early:"Eshik tugmasi boshlanishdan {m} daqiqa oldin ishlaydi.",w15:"15 daqiqa qoldi. Tugating yoki oldindan uzaytiring.",w5:"5 daqiqa qoldi. Ishingizni saqlang va chiqishga tayyorlaning.",err:"Xatolik yuz berdi. Qayta urinib ko‘ring.",failed:"To‘lov yakunlanmadi.",next:"Keyingi bronlar",ok:"Bron qilindi va to‘landi. Kutamiz!",sel:"Vaqtni tanlang"}};
 const LOC={en:"en-GB",ru:"ru-RU",uz:"uz-UZ"};
 const lc=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.language_code)||"en";
-const S={lang:lc.startsWith("ru")?"ru":lc.startsWith("uz")?"uz":"en",tab:"book",purpose:"gaming",date:null,dur:60,start:null,busy:[],mine:[],busyNow:false,msg:"",err:false,warned:{}};
+const S={lang:lc.startsWith("ru")?"ru":lc.startsWith("uz")?"uz":"en",tab:"book",purpose:"gaming",date:null,start:null,end:null,busy:[],mine:[],busyNow:false,msg:"",err:false,warned:{}};
 const t=k=>T[S.lang][k]; const $=id=>document.getElementById(id);
 const pad=n=>String(n).padStart(2,"0");
 const nowT=()=>new Date(Date.now()+5*36e5);  // Tashkent clock (UTC+5)
@@ -93,8 +94,10 @@ const addDays=(d,n)=>new Date(Date.parse(d+"T00:00:00Z")+n*864e5).toISOString().
 const iso=(d,m)=>`${d}T${pad(Math.floor(m/60))}:${pad(m%60)}:00+05:00`;
 const hm=ms=>new Date(ms+5*36e5).toISOString().slice(11,16);
 const ymd=ms=>new Date(ms+5*36e5).toISOString().slice(0,10);
+const fm=m=>pad(Math.floor(m/60))+":"+pad(m%60);
 const money=n=>Number(n).toLocaleString("ru-RU")+" UZS";
-const durLabel=m=>m%60?`${m} ${t("min")}`:`${m/60} ${t("h")}`;
+const durLabel=m=>(m>=60?Math.floor(m/60)+" "+t("h")+" ":"")+(m%60?m%60+" "+t("min"):"");
+const dur=()=>S.end==null?0:S.end-S.start;  // booking length comes from the picked times
 S.date=todayStr();
 function toast(x){const e=$("toast");e.textContent=x;e.className="s";setTimeout(()=>e.className="",2600)}
 function buzz(k){try{tg&&tg.HapticFeedback.notificationOccurred(k)}catch(e){}}
@@ -102,7 +105,7 @@ function buzz(k){try{tg&&tg.HapticFeedback.notificationOccurred(k)}catch(e){}}
 /* ---------- talking to Make (or demo) ---------- */
 const DEMO={mine:[]};
 function demoRun(a,d){
-  if(a==="get_slots")return{busy:[{start:iso(d.date,13*60),end:iso(d.date,14*60+30)}]};
+  if(a==="get_slots")return{busy:[{start:iso(d.date,13*60),end:iso(d.date,14*60)}]};
   if(a==="create_booking"){const s=Date.parse(d.start);DEMO.mine.push({id:"D"+s,start:d.start,end:new Date(s+d.duration*6e4).toISOString(),purpose:d.purpose,status:"paid",token:"demo"});return{ok:true}}
   if(a==="my_bookings")return{bookings:DEMO.mine};
   if(a==="open_door")return{ok:true};
@@ -116,15 +119,16 @@ async function api(action,data){
 }
 
 /* ---------- slots ---------- */
+// one 30-minute slot is off when it is in the past or overlaps a booking (plus buffer)
 function slotList(){
   const out=[],d=S.date,isToday=d===todayStr(),n=minsNow(),B=CFG.BUFFER_MIN*6e4;
   const minStart=!isToday?0:CFG.WEBHOOK_URL?Math.ceil(n/CFG.STEP)*CFG.STEP:Math.floor(n/CFG.STEP)*CFG.STEP;
-  for(let m=CFG.OPEN_H*60;m+S.dur<=CFG.CLOSE_H*60;m+=CFG.STEP){
-    const s=Date.parse(iso(d,m)),e=s+S.dur*6e4;
+  for(let m=CFG.OPEN_H*60;m+CFG.STEP<=CFG.CLOSE_H*60;m+=CFG.STEP){
+    const s=Date.parse(iso(d,m)),e=s+CFG.STEP*6e4;
     const clash=S.busy.some(b=>s<Date.parse(b.end)+B&&e>Date.parse(b.start)-B);
     out.push({m,off:clash||m<minStart})}
   return out}
-async function loadSlots(){S.start=null;S.busy=[];render();try{S.busy=(await api("get_slots",{date:S.date})).busy||[]}catch(e){toast(t("err"))}render()}
+async function loadSlots(){S.start=S.end=null;S.busy=[];render();try{S.busy=(await api("get_slots",{date:S.date})).busy||[]}catch(e){toast(t("err"))}render()}
 async function loadMine(){try{const r=await api("my_bookings");S.mine=(r.bookings||[]).filter(b=>b.status!=="pending"&&Date.parse(b.end)>Date.now()).sort((a,b)=>Date.parse(a.start)-Date.parse(b.start))}catch(e){S.mine=[]}}
 
 /* ---------- actions ---------- */
@@ -133,14 +137,15 @@ const A={
  tab(x){S.tab=x;S.msg="";if(x==="mine"){loadMine().then(render)}render()},
  purpose(p){S.purpose=p;render()},
  date(d){S.date=d;loadSlots()},
- dur(m){S.dur=m;S.start=null;render()},
- pick(m){S.start=m;render()},
+ pick(m){S.start=m;S.end=null;render()},
+ fin(e){S.end=e;render()},
+ reset(){S.start=S.end=null;render()},
  async pay(){
-  if(S.start==null||S.busyNow)return;S.busyNow=true;render();
+  if(S.end==null||S.busyNow)return;S.busyNow=true;render();
   try{
-   const r=await api("create_booking",{date:S.date,start:iso(S.date,S.start),duration:S.dur,purpose:S.purpose});
+   const r=await api("create_booking",{date:S.date,start:iso(S.date,S.start),duration:dur(),purpose:S.purpose});
    if(r.error)throw 0;
-   const done=()=>{S.busyNow=false;S.start=null;buzz("success");toast(t("ok"));A.tab("mine")};
+   const done=()=>{S.busyNow=false;S.start=S.end=null;buzz("success");toast(t("ok"));A.tab("mine")};
    if(r.invoice_url&&tg&&tg.openInvoice){tg.openInvoice(r.invoice_url,st=>{if(st==="paid")done();else{S.busyNow=false;toast(t("failed"));loadSlots()}})}
    else done();
   }catch(e){S.busyNow=false;toast(t("err"));loadSlots()}
@@ -156,15 +161,23 @@ function paintDoor(){const m=$("dm");if(m){m.textContent=S.msg;m.className="msg"
 
 /* ---------- screens ---------- */
 function weekday(d){try{return new Intl.DateTimeFormat(LOC[S.lang],{weekday:"short"}).format(new Date(d+"T12:00:00Z"))}catch(e){return""}}
+// end times offered after a start is picked: stops at the next booking or closing
+function endList(){
+  const ok={};slotList().forEach(x=>ok[x.m]=!x.off);const out=[];
+  for(let e=S.start+CFG.STEP;ok[e-CFG.STEP];e+=CFG.STEP)out.push(e);
+  return out}
 function renderBook(){
   const days=[0,1,2,3,4,5,6].map(i=>addDays(todayStr(),i));
   const sl=slotList(),free=sl.some(x=>!x.off);
+  const sum=`<div class="sum"><div><small>${t("from")}</small><b>${S.start==null?"--:--":fm(S.start)}</b></div><div><small>${t("until")}</small><b>${S.end==null?"--:--":fm(S.end)}</b></div><div><small>${t("len")}</small><b>${S.end==null?"-":durLabel(dur())}</b></div></div>`;
+  const step=S.start==null?t("ps"):S.end==null?t("pe"):"";
+  const cells=S.start==null?sl.map(x=>`<button class="slot" ${x.off?"disabled":""} onclick="A.pick(${x.m})">${fm(x.m)}</button>`):S.end==null?endList().map(e=>`<button class="slot" onclick="A.fin(${e})">${fm(e)}</button>`):[];
   return `<h2>${t("purpose")}</h2><div class="row">
    <button class="chip ${S.purpose==="gaming"?"on":""}" onclick="A.purpose('gaming')">${t("gaming")}</button>
    <button class="chip ${S.purpose==="work"?"on":""}" onclick="A.purpose('work')">${t("work")}</button></div>
   <h2>${t("date")}</h2><div class="row">${days.map((d,i)=>`<button class="chip ${d===S.date?"on":""}" onclick="A.date('${d}')">${i?weekday(d):t("today")}<small>${d.slice(8)}.${d.slice(5,7)}</small></button>`).join("")}</div>
-  <h2>${t("dur")}</h2><div class="row">${CFG.DURATIONS.map(m=>`<button class="chip ${m===S.dur?"on":""}" onclick="A.dur(${m})">${durLabel(m)}</button>`).join("")}</div>
-  <h2>${t("time")}</h2>${free?`<div class="grid">${sl.map(x=>`<button class="slot ${S.start===x.m?"on":""}" ${x.off?"disabled":""} onclick="A.pick(${x.m})">${pad(Math.floor(x.m/60))}:${pad(x.m%60)}</button>`).join("")}</div>`:`<div class="empty">${t("none")}</div>`}
+  <h2></h2>${sum}${S.start!=null?`<button class="chip" onclick="A.reset()">${t("chg")}</button>`:""}
+  ${step?`<h2>${step}</h2>`:""}${S.start==null&&!free?`<div class="empty">${t("none")}</div>`:cells.length?`<div class="grid">${cells.join("")}</div>`:""}
   <p class="note">${t("incl")}</p>`}
 function renderMine(){
   const b=S.mine[0];
@@ -184,8 +197,9 @@ function render(){
   $("langs").innerHTML=["uz","ru","en"].map(l=>`<button class="${S.lang===l?"on":""}" onclick="A.lang('${l}')">${l.toUpperCase()}</button>`).join("");
   $("tabs").innerHTML=["book","mine"].map(x=>`<button class="${S.tab===x?"on":""}" onclick="A.tab('${x}')">${t(x)}</button>`).join("");
   $("app").innerHTML=S.tab==="book"?renderBook():renderMine();
-  const price=S.dur/60*CFG.PRICE_PER_HOUR;
-  $("bar").innerHTML=S.tab==="book"?`<div class="bar"><div><span>${t("total")}</span><b>${money(price)}</b></div><button class="btn" ${S.start==null||S.busyNow?"disabled":""} onclick="A.pay()">${S.start==null?t("sel"):t("pay")}</button></div>`:"";
+  const picked=S.end!=null,price=dur()/60*CFG.PRICE_PER_HOUR;
+  const info=picked?`${fm(S.start)} - ${fm(S.end)} · ${durLabel(dur())}`:t("total");
+  $("bar").innerHTML=S.tab==="book"?`<div class="bar"><div><span>${info}</span><b>${money(price)}</b></div><button class="btn" ${!picked||S.busyNow?"disabled":""} onclick="A.pay()">${picked?t("pay"):t("sel")}</button></div>`:"";
   tick()}
 
 /* ---------- live countdown, door button, 15 and 5 minute warnings ---------- */
